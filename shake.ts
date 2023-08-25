@@ -1,12 +1,10 @@
 //import {getFilesInDirectoryRecursive } from './readDirectory'
-const fs = require('fs');
+import fs = require('fs');
 
 interface FuncDefImportMap {
     functionImports: string[];
     definitionImports: string[];
 }
-
-
 
 // @ts-ignore
 let printImportMap = function (importMap: FuncDefImportMap): void {
@@ -27,12 +25,9 @@ const readFile = function (fileName: string): string {
     if (fileName === null) return '';
     if (fileName.length === 0) return '';
 
-    let encoding: any = { encoding: 'utf-8' };
+    let options: any = { encoding: 'utf-8' };
     let output: string = '';
-    output = fs.readFileSync(fileName, encoding, (err: any, data: any) => {
-        if (err) throw err;
-        return data.toString();
-    });
+    output = fs.readFileSync(fileName, options).toString();
     return output;
 };
 
@@ -105,7 +100,6 @@ const mapImportsIfNotUsed = function (defImports: string[], importsNotUsed: stri
             }
         }
     }
-
 
     return importNotUsedMap;
 };
