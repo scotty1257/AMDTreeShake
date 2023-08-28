@@ -142,6 +142,10 @@ const removeUnusedImports = function (fileText: string, importsToRemoveMap: Func
     return output;
 }
 
+const replaceFuntionArgumentsWithUsedList = function(fileText: string, importsToRemoveMap: FuncDefImportMap) : string {
+
+}
+
 const determineCommaPlacementInDef = function (fileText: string, indexPath: number, pathIn: string) : string {
 
     let pathUndef: boolean = (pathIn === undefined || pathIn === null || pathIn.length === 0);
@@ -160,6 +164,7 @@ const determineCommaPlacementInDef = function (fileText: string, indexPath: numb
         if (fileText[(indexPath - 1)] === ',') { path = ',' + path; }
 
         if (fileText[(indexPath - 2)] === ',') { path = ', ' + path;}
+        console.log("PATH STRING::::>>> " + path);
     }
 
     if (path.length) return path;
@@ -176,7 +181,7 @@ const determineCommaPlacementInFunc = function (fileText: string, indexFunc: num
     if (funcUndef) {
         return '';
     } else {
-        if (fileText[(indexFunc + func.length)] === ',') { func += ','; }
+        if (fileText[(indexFunc + func.length + 1)] === ',') { func += ','; }
 
         if (fileText[(indexFunc + func.length + 2)] === ',') { func += ' ,'; }
 
@@ -184,7 +189,7 @@ const determineCommaPlacementInFunc = function (fileText: string, indexFunc: num
         if (fileText[(indexFunc - 1)] === ',') { func = ',' + func; }
 
         if (fileText[(indexFunc - 2)] === ',') { func = ', ' + func; }
-
+        console.log("FUNC STRING::::>>> " + func);
     }
 
     if (func.length) return func;
@@ -193,16 +198,23 @@ const determineCommaPlacementInFunc = function (fileText: string, indexFunc: num
 
 }
 
-
 const processFile = function (fileName: string, directory?: string): void {
-    let fileContents: string = readFile(fileName); // Read the entire file
-    let defineImports: string[] = getDefineImportsFromString(fileContents); // Get the paths in the define section
-    let funcImports: string[] = getFunctionImportsFromString(fileContents); // get the function arguments that correspond to the paths
-    let importsNotUsed: string[] = findImportsNotUsedInSource(fileContents, funcImports); // Determine in the function arguments are not used in the file
-    let importsMap: FuncDefImportMap = mapImportsIfNotUsed(defineImports, importsNotUsed); // Map any function imports to their corresponding path in the definition section
-    let finalOutput: string = removeUnusedImports(fileContents, importsMap); // remove the mapped values in the text file
-    //printFinalOutput(finalOutput, 20);
+    // Read the entire file
+    let fileContents: string = readFile(fileName);
+    // Get the paths in the define section
+    let defineImports: string[] = getDefineImportsFromString(fileContents);
+    // get the function arguments that correspond to the paths
+    let funcImports: string[] = getFunctionImportsFromString(fileContents);
+    // Determine in the function arguments are not used in the file
+    let importsNotUsed: string[] = findImportsNotUsedInSource(fileContents, funcImports);
+    // Map any function imports to their corresponding path in the definition section
+    let importsMap: FuncDefImportMap = mapImportsIfNotUsed(defineImports, importsNotUsed);
+    // remove the mapped values in the text file
+    let finalOutput: string = removeUnusedImports(fileContents, importsMap);
+    // Print output after cleaning
+    printFinalOutput(finalOutput, 20);
 };
+
 
 const isDefineInComment = function (textInput: string) : boolean {
     let isInComment: boolean = false;
@@ -213,13 +225,14 @@ const isDefineInComment = function (textInput: string) : boolean {
 
     return isInComment;
 }
-function doRun() {
+function doRun(fileToProcess: number) {
     const start = performance.now();
-    for (let i = 0; i < 250000; i++) {
+    for (let i = 0; i < fileToProcess; i++) {
         processFile('SWXWebMBDWAfr.js')
     }
     const end = performance.now();
     console.log("Done in: " + (end - start) / 1000 + " sec");
 }
 
-doRun();
+let numberFiles: number = 1;
+doRun(numberFiles);
