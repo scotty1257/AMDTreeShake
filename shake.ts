@@ -20,6 +20,17 @@ let printArrayOfStrings = function (inputArr: string[]): void {
     }
 };
 
+let printFinalOutput = function (finalOutput: string, numberOfLinesToPrint: number) : void {
+    let finalOutputArr: string[] = finalOutput.split('\n');
+
+    console.log('====================BEGIN FINAL OUTPUT AFTER REMOVING IMPORTS====================');
+    for (let i = 0; i < numberOfLinesToPrint; i++) {
+        console.log(i + " | " + finalOutputArr[i]);
+    }
+    console.log('====================END FINAL OUTPUT AFTER REMOVING IMPORTS====================');
+
+}
+
 const readFile = function (fileName: string): string {
     if (fileName === undefined) return '';
     if (fileName === null) return '';
@@ -106,7 +117,7 @@ const mapImportsIfNotUsed = function (defImports: string[], importsNotUsed: stri
 
 const removeUnusedImports = function (fileText: string, importsToRemoveMap: FuncDefImportMap): string {
     let isFileCleaned: boolean = false;
-    let output: string = '';
+    let output: string = fileText;
     if (importsToRemoveMap.functionImports.length !== importsToRemoveMap.definitionImports.length)
         return '';
 
@@ -118,40 +129,97 @@ const removeUnusedImports = function (fileText: string, importsToRemoveMap: Func
         let path: string = importsToRemoveMap.definitionImports[i];
         let func: string = importsToRemoveMap.functionImports[i];
 
-        // Comma After file path
-        if (fileText[(indexPath + path.length)] === ',') { path += ','; }
-
-        if (fileText[(indexPath + path.length + 1)] === ' ,') { path += ' ,'; }
-
-        // Comma before file path
-        if (fileText[(indexPath - 1)] === ',') { path = ',' + path; }
-
-        if (fileText[(indexPath - 1)] === ', ') { path = ', ' + path; }
-
+        let funcRemove: string = determineCommaPlacementInFunc(fileText, indexFunc, func);
+        let defRemove: string = determineCommaPlacementInDef(fileText, indexPath, path);
         // Need to handle the case of each import on a new line, and some imports on a single line
         // currently only handles the multi line import
         if (path && func) {
-            output = fileText.replace(path, '');
+            output = output.replace(defRemove, '');
+            output = output.replace(funcRemove, '');
             isFileCleaned = true;
         }
     }
     return output;
 }
 
-const processFile = function (fileName: string, directory?: string): void {
-    let m = readFile(fileName); //  Add directory to new function soon
-    //console.log(m);
-    let a = getDefineImportsFromString(m);
-    let b = getFunctionImportsFromString(m);
-    let c = findImportsNotUsedInSource(m, b);
-    let k = mapImportsIfNotUsed(a, c);
-    let j = removeUnusedImports(m, k)
-    console.log(j);
-    //printImportMap(k);
+const determineCommaPlacementInDef = function (fileText: string, indexPath: number, pathIn: string) : string {
 
-    //printArrayOfStrings(c);
+    let pathUndef: boolean = (pathIn === undefined || pathIn === null || pathIn.length === 0);
+
+    let path: string = pathIn;
+
+    if (pathUndef) {
+        return '';
+    } else {
+        // Comma after filepath
+        if (fileText[(indexPath + path.length)] === ',') { path += ','; }
+
+        if (fileText[(indexPath + path.length + 1)] === ' ') { path += ' ,'; }
+
+        // Comma before file path
+        if (fileText[(indexPath - 1)] === ',') { path = ',' + path; }
+
+        if (fileText[(indexPath - 2)] === ',') { path = ', ' + path;}
+    }
+
+    if (path.length) return path;
+
+    return '';
+}
+
+const determineCommaPlacementInFunc = function (fileText: string, indexFunc: number, funcIn: string) : string {
+
+    let funcUndef: boolean = (funcIn === undefined || funcIn === null || funcIn.length === 0);
+
+    let func: string = funcIn;
+
+    if (funcUndef) {
+        return '';
+    } else {
+        if (fileText[(indexFunc + func.length)] === ',') { func += ','; }
+
+        if (fileText[(indexFunc + func.length + 2)] === ',') { func += ' ,'; }
+
+        // Comma before function arg
+        if (fileText[(indexFunc - 1)] === ',') { func = ',' + func; }
+
+        if (fileText[(indexFunc - 2)] === ',') { func = ', ' + func; }
+
+    }
+
+    if (func.length) return func;
+
+    return '';
+
+}
+
+
+const processFile = function (fileName: string, directory?: string): void {
+    let fileContents: string = readFile(fileName); // Read the entire file
+    let defineImports: string[] = getDefineImportsFromString(fileContents); // Get the paths in the define section
+    let funcImports: string[] = getFunctionImportsFromString(fileContents); // get the function arguments that correspond to the paths
+    let importsNotUsed: string[] = findImportsNotUsedInSource(fileContents, funcImports); // Determine in the function arguments are not used in the file
+    let importsMap: FuncDefImportMap = mapImportsIfNotUsed(defineImports, importsNotUsed); // Map any function imports to their corresponding path in the definition section
+    let finalOutput: string = removeUnusedImports(fileContents, importsMap); // remove the mapped values in the text file
+    //printFinalOutput(finalOutput, 20);
 };
 
-processFile('drwannline.js')
+const isDefineInComment = function (textInput: string) : boolean {
+    let isInComment: boolean = false;
 
+    if (textInput.length === 0 || textInput === 'undefined' || textInput === null) {
+        return isInComment;
+    }
 
+    return isInComment;
+}
+function doRun() {
+    const start = performance.now();
+    for (let i = 0; i < 250000; i++) {
+        processFile('SWXWebMBDWAfr.js')
+    }
+    const end = performance.now();
+    console.log("Done in: " + (end - start) / 1000 + " sec");
+}
+
+doRun();

@@ -9,12 +9,15 @@ define('DS/SWXWebMBDApp/SWXWebMBDWAfr',
         'DS/CoreEvents/Events',
         'DS/SWXWebMBDUtils/SWXWebMBDConditionalLoader2',
         'DS/SWXWebMBDUtils/SWXWebMbdUtils',
+        'DS/SWXWebMBDUtils/SWXWebMbdUtils2',
+        'DS/SWXWebMBDUtils/SWXWebMbdUtils3',
+        'DS/SWXWebMBDUtils/SWXWebMbdUtils4',
         'DS/SWXWebMBDUtils/SWXWebMBDUtility',
         'DS/SWXWebUtilities/SWXEventTypes',
         'DS/SWXWebUtilities/SWXWAfrContextUtils',
         'DS/SWXWebUI/SWXWebProgress',
         'DS/SWXWebCommands/SWXWebToggleViewFilterCmd'
-    ], function (SWXWebBaseMainWAfr, WUXEvent, SWXWebMBDConditionalLoader2, SWXWebMbdUtils, SWXWebMBDUtility, SWXEventTypes, SWXWAfrContextUtils, SWXWebProgress, SWXWebToggleViewFilterCmd) {
+    ], function (SWXWebBaseMainWAfr, WUXEvent, SWXWebMBDConditionalLoader2, SWXWebMbdUtils, SWXWebMBDUtility, SWXEventTypes, SWXWAfrContextUtils, SWXWebProgress, SWXWebToggleViewFilterCmd, SWXWebMbdUtils2, SWXWebMbdUtils3,SWXWebMbdUtils4) {
         var MBDApp = SWXWebBaseMainWAfr.Extend();
         var suppressedfilters = [];
         let staticPC = 0;
