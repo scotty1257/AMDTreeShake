@@ -142,7 +142,17 @@ const removeUnusedImports = function (fileText: string, importsToRemoveMap: Func
     return output;
 }
 
-const replaceFuntionArgumentsWithUsedList = function(fileText: string, importsToRemoveMap: FuncDefImportMap) : string {
+const replaceFunctionArgumentsWithUsedList = function(fileText: string, importsToRemoveMap: FuncDefImportMap) : string {
+
+    let leftParIndexInit: number = fileText.indexOf('(') + 1;
+    let rightParIndexInit: number = fileText.indexOf(')');
+
+    let searchText: string = fileText.substring(leftParIndexInit, rightParIndexInit);
+
+    let leftParIndex: number = searchText.indexOf('(');
+    let rightParIndex: number = searchText.indexOf('(');
+
+    //let funcArgList: string[] = searchText.substring(leftParIndex, rightParIndex).trim().split(',').forEach
 
 }
 
